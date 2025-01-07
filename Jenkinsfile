@@ -1,20 +1,31 @@
  pipeline {     
-    agent {label 'slave-1'} 
+    agent any
     
     tools {
         maven 'Maven'
         jdk 'JDK17'
     }
 
+    parameters {
+        // string (name: 'Branch_Name', defaultValue: main, description: 'Select the branch name:')
+        choice (name: 'Branch_Name', choices: ['main','dev','test'], description: 'Select the branch name:')
+    }
+    
     stages {
-
+        
+        stage('Git Checkout') {
+            steps {
+                git branch: "${params.branch_Name}", url: 'https://github.com/shubham-sihasane/Tomcats.git'
+            }
+        }
+         
         stage('Compile') {
             steps {
-            sh  "mvn compile"
+                sh  "mvn compile"
             }
         }
         
-        stage('Test') {
+        stage('tests') {
             steps {
                 sh "mvn test"
             }
